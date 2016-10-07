@@ -13,4 +13,4 @@ COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD cron && tail -f /etc/services
+CMD cron && tail -f /var/log/cron.log
