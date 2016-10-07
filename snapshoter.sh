@@ -1,47 +1,36 @@
 #!/usr/bin/env bash
 
-usage() {
-  echo -e "\nUsage: $0 [-d <days>]" 1>&2
-  echo -e "\nOptions:\n"
-  echo -e "    -d    Number of days to keep snapshots.  Snapshots older than this number deleted."
-  echo -e "          Default if not set: 7 [OPTIONAL]"
-  echo -e "\n"
+function err() {
+  case "$-" in
+    *i*) echo $@;;
+    *) if [! -z "$SLACK_HOOK"]; then 
+           curl -X POST -H 'Content-type: application/json' --data '{"username": "snapshot-backuper","text":"Error: '$@'"}' $SLACK_HOOK
+       else
+           echo "You will never see this message. Guess why?"
+       fi
+       ;;
+  esac
   exit 1
 }
 
-#
-# Get and set how long to keep snapshots. Default to 7 (days)
-#
-while getopts ":d:" o; do
-  case "${o}" in
-    d)
-      opt_d=${OPTARG}
-      ;;
+# keep 7 days by default
 
-    *)
-      usage
-      ;;
-  esac
-done
-shift $((OPTIND-1))
+: ${SNAPSHOT_KEEP_DAYS:=7}
 
-if [[ -n $opt_d ]];then
-  OLDER_THAN=$opt_d
-else
-  OLDER_THAN=7
+if [ -z "$SNAPSHOT_DEVICE_NAME" -o -z "$SNAPSHOT_INSTANCE_ZONE" ]; then
+    err "You need to specify both SNAPSHOT_DEVICE_NAME and SNAPSHOT_INSTANCE_ZONE."
 fi
 
-#
 # CREATE DAILY SNAPSHOT
 #
 # get the device name for this vm
-DEVICE_NAME=SNAPSHOT_DEVICE_NAME
+DEVICE_NAME=$SNAPSHOT_DEVICE_NAME
 
 # get the zone that this vm is in
-INSTANCE_ZONE=SNAPSHOT_INSTANCE_ZONE
+INSTANCE_ZONE=$SNAPSHOT_INSTANCE_ZONE
 
 # create a datetime stamp for filename
-DATE_TIME="$(date "+%s")"
+DATE_TIME="$(date +%Y%m%d%H%M)"
 
 # create the snapshot
 echo -e "$(gcloud compute disks snapshot ${DEVICE_NAME} --snapshot-names backup-${DEVICE_NAME}-${DATE_TIME} --zone ${INSTANCE_ZONE})"
@@ -61,12 +50,13 @@ echo "${SNAPSHOT_LIST}" | while read line ; do
 
    # get the date that the snapshot was created
    SNAPSHOT_DATETIME="$(gcloud compute snapshots describe ${SNAPSHOT_NAME} | grep "creationTimestamp" | cut -d " " -f 2 | tr -d \')"
-
+   echo $SNAPSHOT_DATETIME
    # format the date
    SNAPSHOT_DATETIME="$(date -d ${SNAPSHOT_DATETIME} +%Y%m%d)"
+   echo $SNAPSHOT_DATETIME
 
    # get the expiry date for snapshot deletion (currently 7 days)
-   SNAPSHOT_EXPIRY="$(date -d "-${OLDER_THAN} days" +"%Y%m%d")"
+   SNAPSHOT_EXPIRY="$(date -d "-${SNAPSHOT_KEEP_DAYS} days" +"%Y%m%d")"
 
    # check if the snapshot is older than expiry date
     if [ $SNAPSHOT_EXPIRY -ge $SNAPSHOT_DATETIME ];then

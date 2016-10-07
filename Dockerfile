@@ -8,5 +8,9 @@ RUN apt-get update
 RUN apt-get -y install google-cloud-sdk
 RUN mkdir -p /opt/
 COPY snapshoter.sh /opt/
+RUN chmod +x /opt/snapshoter.sh
+COPY entrypoint.sh /
+RUN chmod +x /entrypoint.sh
 
+ENTRYPOINT ["/entrypoint.sh"]
 CMD cron && tail -f /etc/services
