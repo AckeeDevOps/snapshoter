@@ -11,3 +11,5 @@ crontab /tmp/crontab
 rm /tmp/crontab
 
 /usr/sbin/cron
+tail -f /var/log/cron.log
+sleep 30d
