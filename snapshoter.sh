@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 
 function err() {
+  escapedText=$(echo $@ | sed 's/"/\"/g' | sed "s/'/\'/g" )
+  json="{\"text\": \"$escapedText\"}"
+
   case "$-" in
-    *i*) echo $@;;
-    *) if [! -z "$SLACK_HOOK"]; then 
-           curl -X POST -H 'Content-type: application/json' --data '{"username": "snapshot-backuper","text":"Error: '$@'"}' $SLACK_HOOK
+    *i*) echo $@
+       ;;
+    *) if [ ! -z "$SLACK_HOOK" ]; then
+           curl -s -d "payload=$json" $SLACK_HOOK
        else
            echo "You will never see this message. Guess why?"
        fi
