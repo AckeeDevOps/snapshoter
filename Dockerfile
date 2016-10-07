@@ -11,6 +11,7 @@ COPY snapshoter.sh /opt/
 RUN chmod +x /opt/snapshoter.sh
 COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
+RUN rm /etc/localtime && ln -s /usr/share/zoneinfo/Europe/Prague /etc/localtime
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD cron && tail -f /var/log/cron.log
+CMD /usr/sbin/cron && tail -f /var/log/cron.log
