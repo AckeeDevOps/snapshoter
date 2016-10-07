@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# inspired by https://github.com/jacksegal/google-compute-snapshot/blob/master/snapshot.sh
 
 function err() {
   escapedText=$(echo $@ | sed 's/"/\"/g' | sed "s/'/\'/g" )
@@ -38,6 +39,9 @@ DATE_TIME="$(date +%Y%m%d%H%M)"
 
 # create the snapshot
 echo -e "$(gcloud compute disks snapshot ${DEVICE_NAME} --snapshot-names backup-${DEVICE_NAME}-${DATE_TIME} --zone ${INSTANCE_ZONE})"
+if [ $? -ne 0 ]; then
+    err "Creation of snapshot named backup-${DEVICE_NAME}-${DATE_TIME} failed. Examine the logs."
+fi
 
 #
 # DELETE OLD SNAPSHOTS (OLDER THAN 7 DAYS)
@@ -67,5 +71,8 @@ echo "${SNAPSHOT_LIST}" | while read line ; do
       # delete the snapshot
       echo -e "[$(date -Iseconds)] \c"
       echo "$(gcloud compute snapshots delete ${SNAPSHOT_NAME})"
+      if [ $? -ne 0 ]; then
+         err "Deletion of snapshot named ${SNAPSHOT_NAME} failed. Examine the logs."
+      fi
     fi
 done
