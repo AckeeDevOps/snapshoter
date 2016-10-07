@@ -6,5 +6,7 @@ RUN echo "deb http://packages.cloud.google.com/apt cloud-sdk-$(lsb_release -c -s
 RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 RUN apt-get update
 RUN apt-get -y install google-cloud-sdk
+RUN mkdir /opt/
+COPY snapshoter.sh /opt/
 
-CMD cron && tail -f /var/log/cron.log
+CMD cron && tail -f /etc/services
