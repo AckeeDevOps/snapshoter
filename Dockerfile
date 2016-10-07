@@ -14,4 +14,4 @@ RUN chmod +x /entrypoint.sh
 RUN rm /etc/localtime && ln -s /usr/share/zoneinfo/Europe/Prague /etc/localtime
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD /usr/sbin/cron && tail -f /var/log/cron.log
+CMD tail -f /var/log/cron.log

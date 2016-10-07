@@ -10,3 +10,4 @@ echo "$CRON_SCHEDULE /opt/backuper.sh > /var/log/cron.log 2>&1" >> /tmp/crontab
 crontab /tmp/crontab
 rm /tmp/crontab
 
+/usr/sbin/cron
