@@ -18,7 +18,7 @@ EOF
 touch /var/log/cron.log
 
 # add a cron job
-echo "$CRON_SCHEDULE /opt/snapshoter.sh > /var/log/cron.log 2>&1" >> /tmp/crontab
+echo "$CRON_SCHEDULE /opt/snapshoter.sh >> /var/log/cron.log 2>&1" >> /tmp/crontab
 crontab /tmp/crontab
 rm /tmp/crontab
 
