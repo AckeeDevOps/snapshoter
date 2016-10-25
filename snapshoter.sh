@@ -5,6 +5,7 @@ function err() {
   escapedText=$(echo $@ | sed 's/"/\"/g' | sed "s/'/\'/g" )
   json="{\"text\": \"$escapedText\"}"
 
+  echo $-
   case "$-" in
     *i*) echo $@
        ;;
@@ -22,8 +23,10 @@ function err() {
 
 : ${SNAPSHOT_KEEP_DAYS:=7}
 
+. /etc/snapshoter
+
 if [ -z "$SNAPSHOT_DEVICE_NAME" -o -z "$SNAPSHOT_INSTANCE_ZONE" ]; then
-    err "You need to specify both SNAPSHOT_DEVICE_NAME and SNAPSHOT_INSTANCE_ZONE."
+    err "You need to specify both SNAPSHOT_DEVICE_NAME ($SNAPSHOT_DEVICE_NAME) and SNAPSHOT_INSTANCE_ZONE ($SNAPSHOT_INSTANCE_ZONE)."
 fi
 
 # CREATE DAILY SNAPSHOT
