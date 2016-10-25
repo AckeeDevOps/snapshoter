@@ -48,7 +48,7 @@ fi
 #
 
 # get a list of existing snapshots, that were created by this process (gcs-), for this vm disk (DEVICE_NAME)
-SNAPSHOT_LIST="$(gcloud compute snapshots list --regexp "(.*backup-.*)|(.*-${DEVICE_NAME}-.*)" --uri)"
+SNAPSHOT_LIST="$(gcloud compute snapshots list --regexp "(backup-${DEVICE_NAME}-.*)" --uri)"
 
 # loop through the snapshots
 echo "${SNAPSHOT_LIST}" | while read line ; do
