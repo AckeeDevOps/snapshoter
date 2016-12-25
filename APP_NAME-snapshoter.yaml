@@ -1,0 +1,44 @@
+#
+# gce disk snapshoter
+#
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: APP_NAME-snapshoter
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: APP_NAME-snapshoter
+        role: client
+        tier: backend
+    spec:
+      containers:
+      - name: APP_NAME-snapshoter
+        image: ackee/snapshoter:latest
+        env:
+        # TimeZone for proper cron scheduling execution
+        - name: TZ
+          value: "Europe/Prague"
+        # GCE Disk name
+        - name: SNAPSHOT_DEVICE_NAME
+          value: "APP_NAME-data-ENV_NAME"
+        # GCE Instance zone
+        - name: SNAPSHOT_INSTANCE_ZONE
+          value: "europe-west1-d"
+        - name: SLACK_HOOK
+          value: "#ci-APP_NAME"
+        - name: SNAPSHOT_KEEP_DAYS
+          value: "7"
+        # Resources should be fine for communicating with the GCE Snapshot API
+        resources:
+          requests:
+            cpu: 1m
+            memory: 8Mi
+          limits: 
+            cpu: 5m
+            memory: 16Mi
+      # allow to run only on certain cluster node
+      nodeSelector:
+        cloud.google.com/gke-nodepool: default-pool
