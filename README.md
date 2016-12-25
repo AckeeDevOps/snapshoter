@@ -17,3 +17,4 @@ Optional env parameters:
 Sample deployment:
     kubectl run snapshoter --image ackee/snapshoter:latest --env="SNAPSHOT_DEVICE_NAME=nginxress" --env="SNAPSHOT_INSTANCE_ZONE=europe-west1-d"
 
+Consider using file APP_NAME-snapshoter.yaml for Kubernetes deployment
