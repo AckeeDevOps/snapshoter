@@ -37,8 +37,5 @@ spec:
             cpu: 1m
             memory: 8Mi
           limits: 
-            cpu: 5m
-            memory: 16Mi
-      # allow to run only on certain cluster node
-      nodeSelector:
-        cloud.google.com/gke-nodepool: default-pool
+            cpu: 50m
+            memory: 128Mi
