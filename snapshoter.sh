@@ -35,7 +35,7 @@ fi
 DEVICE_NAME=$SNAPSHOT_DEVICE_NAME
 
 # trim very long device names
-DEVICE_NAME=$(echo $DEVICE_NAME | head -c 40)
+SHORT_DEVICE_NAME=$(echo $DEVICE_NAME | head -c 40)
 
 # get the zone that this vm is in
 INSTANCE_ZONE=$SNAPSHOT_INSTANCE_ZONE
@@ -44,9 +44,9 @@ INSTANCE_ZONE=$SNAPSHOT_INSTANCE_ZONE
 DATE_TIME="$(date +%Y%m%d%H%M)"
 
 # create the snapshot
-echo -e "$(gcloud compute disks snapshot ${DEVICE_NAME} --snapshot-names backup-${DEVICE_NAME}-${DATE_TIME} --zone ${INSTANCE_ZONE})"
+echo -e "$(gcloud compute disks snapshot ${DEVICE_NAME} --snapshot-names backup-${SHORT_DEVICE_NAME}-${DATE_TIME} --zone ${INSTANCE_ZONE})"
 if [ $? -ne 0 ]; then
-    err "Creation of snapshot named backup-${DEVICE_NAME}-${DATE_TIME} failed. Examine the logs."
+    err "Creation of snapshot named backup-${SHORT_DEVICE_NAME}-${DATE_TIME} failed. Examine the logs."
 fi
 
 #
@@ -54,7 +54,7 @@ fi
 #
 
 # get a list of existing snapshots, that were created by this process (gcs-), for this vm disk (DEVICE_NAME)
-SNAPSHOT_LIST="$(gcloud compute snapshots list --regexp "(backup-${DEVICE_NAME}-.*)" --uri)"
+SNAPSHOT_LIST="$(gcloud compute snapshots list --regexp "(backup-${SHORT_DEVICE_NAME}-.*)" --uri)"
 
 # loop through the snapshots
 echo "${SNAPSHOT_LIST}" | while read line ; do
