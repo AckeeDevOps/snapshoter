@@ -34,6 +34,9 @@ fi
 # get the device name for this vm
 DEVICE_NAME=$SNAPSHOT_DEVICE_NAME
 
+# trim very long device names
+DEVICE_NAME=$(echo $DEVICE_NAME | head -c 40)
+
 # get the zone that this vm is in
 INSTANCE_ZONE=$SNAPSHOT_INSTANCE_ZONE
 
